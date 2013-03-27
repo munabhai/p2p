@@ -1,58 +1,39 @@
 \documentclass[10pt]{proc}
 
 \begin{document}
-
 \large{\textbf{Reading Assignment 1}}\\
-
 \large{\textbf{Authors: Gerard Marin Nogueras \newline Nicolae Paladi}}\\
-
-This paper contains a review of two articles, ``Chord: A scalable peer-to-peer lookup service for internet applications'' \cite{stoica2001chord} and ``Navigation in a small world'' \cite{kleinberg2000navigation}.
-The review of paper \cite{stoica2001chord} enumerates the papers motivation, contributions, solution, strong points and weak points,
-The review of paper \cite{kleinberg2000navigation} focuses on answering two questions about the content of the paper.
-
-
 \section{Motivation}
 The paper presents Chord, a protocol that defines a mechanism for an efficient and scalable location of data items in peer-to-peer systems \cite{stoica2001chord}. 
 In most peer-to-peer systems and applications the core operation is the location of a particular data item stored by some peer. 
-This operation becomes a difficult problem when the current system needs to be dynamic (nodes can frequently join and leave) or scalable (can grow indefinitely). 
-Chord is a protocol which addresses these problems.
-
-
+This operation becomes difficult when the current system needs to be dynamic or scalable. 
+Chord addresses these problems.
 \section{Contributions}
-
-The paper presents the Chord algorithm, along with a proof of its correctness and simulations results that measure its performance. 
-Chord is a distributed lookup protocol to efficiently locate data items within a distributed peer-to-peer system. 
-List of contributions:
+%The paper presents the Chord, along with a proof of its correctness and performance measurements. 
+%List of contributions:
 \begin{itemize}
  \item Description of Chord, a distributed algorithm with no node with higher responsibility, no single point of failure. 
-  The algorithm provides load balancing by using consistent hashing is dynamic in nature (allow nodes to frequently join and leave), robust and routing-efficient with information about few nodes.
+% The algorithm provides load balancing by using consistent hashing is dynamic in nature (allow nodes to frequently join and leave), robust and routing-efficient with information about few nodes.
  \item Theoretical proof of Chord’s correctness
  \item Proof of correctness of the Chord algorithm by test and simulation.
- \item Proof of performance: briefly present or mention real applications for peer-to-peer systems built on top of Chord.
+ \item Proof of performance: briefly presentation of applications for peer-to-peer systems built on top of Chord.
 \end{itemize}
-
 \section{Solution}
-Chord assigns keys to nodes responsible for them using consistent hashing. 
-Based on the properties of the hashing scheme, the keys are evenly distributed across all nodes. 
-Location of keys across the nodes relies on using the successor information in the state of the node. 
-A query for a certain key visits the nodes along the Chord circle until the two nodes between which a key is stored are identified and points to the second node of the two. 
+Chord assigns keys to nodes responsible for them using consistent hashing and evenly distributes them across all nodes.
+A query for a certain key uses successor information in the state of the node to visit the nodes along the Chord circle until the two nodes between which a key is stored are identified and points to the second node of the two. 
 An optimization of the algorithm that allows for scalable lookups extends required node state with a routing table containing information about \emph{m} number of distinct nodes in the Chord circle called fingers. 
-Finger nodes are selected such that the \emph{i}-th entry of \emph{n}s routing table contains the identity of the first node \emph{s} that succeeds \emph{n} by at least $2^{i-1}$ on the chord circle. 
-This setup ensures that a query can be solved by contacting O(logN) nodes.
-In order to support dynamic node joins and failures, each node periodically runs a stabilization algorithm to update its node configuration information. 
-By maintaining a list of \emph{r} successors on each node, the algorithms ensures the resilience of the Chord ring in the case of \emph{r-1} successor node failures. 
-Finally, two optimizations for the case of voluntary node departures can be made by nodes copying their keys to the successor before leaving and informing their predecessor about leaving the Chord circle. 
+Finger nodes are selected such that the \emph{i}-th entry of \emph{n}s routing table contains the identity of the first node \emph{s} that succeeds \emph{n} by at least $2^{i-1}$ on the chord circle, which ensures query resolution by contacting O(logN) nodes.
+A stabilization algorithm runs periodically to update each node's configuration information. 
+By maintaining a list of \emph{r} successors on each node, the algorithm ensures the resilience of the Chord ring in the case of \emph{r-1} successor node failures. 
+%Finally, two optimizations for the case of voluntary node departures can be made by nodes copying their keys to the successor before leaving and informing their predecessor about leaving the Chord circle. 
 
 \section{Strong Points}
-First, some strong points of the paper:
-\begin{itemize}
-\item Addresses data location in peer-to-peer systems with realistic assumptions
-\item The article analyzes the behaviour of the algorithm in several relevant use cases
-\item Efficiency of the algorithm is proved in the presented evaluation and simulation
-\end{itemize}
-
-Strong points of the algorithm (advantages over existing algorithms)
-
+%\begin{itemize}
+%\item Addresses data location in peer-to-peer systems with realistic assumptions
+%\item The article analyzes the behaviour of the algorithm in several relevant use cases
+%\item Efficiency of the algorithm is proved in the presented evaluation and simulation
+%\end{itemize}
+%Strong points of the algorithm (advantages over existing algorithms)
 \begin{itemize}
  \item S1. Load balance, decentralization, scalability, availability, flexible naming
  \item S2. Nodes participating in the algorithm need routing information about a limited number O(logN) other nodes for efficient routing.
@@ -61,20 +42,18 @@ Strong points of the algorithm (advantages over existing algorithms)
 \end{itemize}
 
 \section{Weak Points}
-In this section we enumerate the disadvantages, shortcomings and potential areas of improvement of the Chord algorithm.
-
 \begin{itemize}
  \item W1. Chord does not provide anonymity for lookup operations.
  \item W2. Chord does not ensure that a query will never travel further in network distance than the node where the key is stored.
  \item W3. Application requirements: application using Chord is responsible for providing desired authentication, caching, replication and user-friendly naming of data.
  \item W4. Not random keys: random choose among a set of hash functions.
- \item W5. Chord behaviour needs to be improved against adversarial nodes or network partitions.
- \item W6. (might be a detail on a different abstraction level) The choice of IP as node identifier excludes the use of nodes behind NAT, which is often the case for virtualized nodes.
- \item W7. The load balancing property does not address the case when one certain key is requested in the overwhelming majority of cases.
+% \item W5. Chord behaviour needs to be improved against adversarial nodes or network partitions.
+% \item W6. (might be a detail on a different abstraction level) The choice of IP as node identifier excludes the use of nodes behind NAT, which is often the case for virtualized nodes.
+% \item W7. The load balancing property does not address the case when one certain key is requested in the overwhelming majority of cases.
 \end{itemize}
 
-\section{Questions}
-None.
+%\section{Questions}
+%None.
 
 
 \newpage
