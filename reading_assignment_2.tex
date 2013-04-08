@@ -1,0 +1,82 @@
+\documentclass[10pt]{proc}
+
+\begin{document}
+\large{\textbf{Reading Assignment 2}}\\
+\large{\textbf{Authors: Gerard Marin Nogueras \newline Nicolae Paladi}}\\
+\section{Motivation}
+Given the appeal of gossip-based protocols (due to properties such as resilience to failures and high churn rates) for building highly scalable distributed applications, it is important to factor out an abstraction implemented by the membership mechanism underlying gossip protocols. The paper presents this abstraction as a peer-sampling service. The service is used in gossip-based protocols to deal with dynamics in group of nodes and network failures. 
+
+\section{Contributions}
+%The paper presents the Chord, along with a proof of its correctness and performance measurements. 
+%List of contributions:
+\begin{itemize}
+\item Description of a generic framework to implement a reliable and efficient peer-sampling service that can be used with multiple gossip membership protocols. 
+\item Description of various membership implementations using the framework by the variation of key parameters.
+\item Empirical comparison of a range of gossip protocols through simulations based on synthetic and realistic traces and implementations.
+\item Identification of trade-offs with respect to the different values of the parameters steering the peer sampling mechanism.
+\item Simulations proving the correctness and performance of the implementations in different environments, including a real wide-area cluster environment.
+\end{itemize}
+
+\section{Solution}
+Protocol described is a decentralized, generic abstraction where every node (1) maintains a small local membership table that provides a partial view and (2) periodically refreshes the table using a gossiping procedure. The partial view consists of a ordered list (data structure) of c node descriptors. A node descriptor contains a network address and the age parameter that represents the freshness of the given descriptor. The partial view is updated by a gossiping algorithm executed periodically where two peers exchange their membership information and update the node descriptors in the table. The gossiping algorithm is controlled by two key parameters: H (healing) and S (swapped). Combination of these parameters leads to different gossip-based membership implementations, which share common features like good degree of randomness in peer selection, accuracy of current view, load balancing, robustness and failures resilience. 
+
+\section{Strong Points}
+\begin{enumerate}
+\item The framework proposed has desirable features of gossip-based protocols like scalability, reliability and efficiency. 
+\item The service is widely applicable: information dissemination, aggregation, load balancing and network management. 
+\item Key parameter H (healing) allows to control the average path length.
+\item Key parameter H allows to achieve good resilience to high churn rate and good self-healing properties.
+\end{enumerate}
+
+\section{Weak Points}
+\begin{enumerate}
+ \item Tradeoff between load balancing and fault tolerance: robust protocols will lead load unbalanced systems. 
+\item Impossibility to implement the Allavena protocol using the framework. 
+\item Impossibility to pull more than one view from selected peers. 
+\item Impossibility to perform asymmetric pull and push operations. 
+\end{enumerate}
+
+
+\section{Questions}
+
+\begin{itemize}
+ \item Q1. 
+ %In this paper, the design space for a peer sampling service has three dimensions: peer selection, view propagation and view selection. According to the Cyclon paper, what policies are used in the Shuffling and Enhanced Shuffling in each dimension?
+\textbf{Shuffling:}
+\emph{Peer selection}: Randomly select a peer Q out of a set of known neighbours (rand).
+\emph{View propagation}: A random subset of l nodes out of P's neighbour nodes are sent to Q and no more than l of Q's neighbours are received. The entries pointing at P are discarded while the remaining entries are included first by filling up the empty cache slots then by replacing existing entries out of the set sent to Q. (pushpull).
+\emph{View selection}: swapper
+
+\textbf{Enhanced Shuffling:}
+\emph{Peer selection}: Peers with the highest age out of the set of node's neighbours are selected (tail).
+\emph{View propagation}: l-1 random neighbours are selected along with Q, which is the chosen target peer with the highest age and after replacing Q's entry with a new entry of age 0 the subset is sent to Q. The set of entries received from Q is treated similarly to the regular shuffling approach. Neighbour relation between nodes P and Q is reversed as a result (push)
+\emph{View selection}: Healer
+
+\item Q2. %How does changing the healing parameter, H, and swapping parameter, S, affect the following peer sampling service properties:
+ \textbf{(a) load balancing.}
+Load balancing is influenced by the standard deviation in the degree distribution, where a high standard deviation increases the occurrence nodes with low in-degree which degrades load-balancing properties. Increasing both H and S results in lower standard deviation, since in the case of a high value for S links are only created in a very controlled way, while a high value for H results in a shorter lifetime of the copies of any given link.
+\newline \textbf{(b) clustering coefficient.}
+The clustering coefficient is mostly influenced by H, such that largest values of H result in significant clustering with a high deviation from a random graph. On the other hand, for the largest values of S clustering is close to random.
+\newline \textbf{(c) average path length.}
+With a large swapping parameter S, the average path length grows towards that of a random graph. In the same time, the average path length decreases as the value of H grows up to H=8+/-2 (depending on the algorithms used), after which the average length increases again.
+\newline  \textbf{(d) fault tolerance if there is catastrophic failure or churn in the system.}
+In the case of a catastrophic loss of nodes, the self-healing performance is controlled
+entirely by H, such that a higher value of H reduces the number of cycles needed to repair the network. This is valid for both the case of a catastrophic failure and high churn (also because catastrophic failure is a subset of the high churn problem)
+
+\item Q3. %What policies do you suggest for (i) peer selection, (ii) view propagation and (iii) view selection, if: 
+\textbf{(a) the load balancing is the main issue.}
+\newline \emph{peer selection} -- tail, which selects the node with the highest age
+\newline \emph{view propagation} -- pushpull
+\newline \emph{view selection} -- swapper, which results in a variance of indegree lower than in the uniform random graph
+ \newline \textbf{(b) the fault tolerance is the main issue.}
+\newline \emph{peer selection} -- tail
+\newline \emph{view propagation} -- pushpull
+\newline \emph{view selection} -- healer, since removal of dead links is important in this case and for that to occur H should be >=1 (or preferably as high as possible), while for blind and swapper policies H=0
+
+
+\end{itemize}
+
+\bibliographystyle{plain}
+\bibliography{reading_assignments_bibliography}
+
+\end{document}
