@@ -49,7 +49,7 @@ Protocol described is a decentralized, generic abstraction where every node (1) 
 
 \textbf{Enhanced Shuffling:}
 \emph{Peer selection}: Peers with the highest age out of the set of node's neighbours are selected (tail).
-\emph{View propagation}: l-1 random neighbours are selected along with Q, which is the chosen target peer with the highest age and after replacing Q's entry with a new entry of age 0 the subset is sent to Q. The set of entries received from Q is treated similarly to the regular shuffling approach. Neighbour relation between nodes P and Q is reversed as a result (push)
+\emph{View propagation}: View propagation: l-1 random P’s neighbors are selected along with Q, which is the chosen target peer with the oldest age. After replacing Q’s entry by an entry with age 0 and P’s address, the subset is sent to Q. The set of entries received from Q is treated similarly to the regular shuffling approach. Neighbor relation between nodes P and Q is reversed as a result (push)
 \emph{View selection}: Healer
 
 \item Q2. %How does changing the healing parameter, H, and swapping parameter, S, affect the following peer sampling service properties:
@@ -58,20 +58,19 @@ Load balancing is influenced by the standard deviation in the degree distributio
 \newline \textbf{(b) clustering coefficient.}
 The clustering coefficient is mostly influenced by H, such that largest values of H result in significant clustering with a high deviation from a random graph. On the other hand, for the largest values of S clustering is close to random.
 \newline \textbf{(c) average path length.}
-With a large swapping parameter S, the average path length grows towards that of a random graph. In the same time, the average path length decreases as the value of H grows up to H=8+/-2 (depending on the algorithms used), after which the average length increases again.
+With a large swapping parameter S, the average path length grows towards that of a random graph. In the same time, for an example graph of 100 000 nodes, the average path length decreases as the value of H grows up to H= 8$\pm$ 2 (depending on the algorithms used), after which the average length increases again.
 \newline  \textbf{(d) fault tolerance if there is catastrophic failure or churn in the system.}
 In the case of a catastrophic loss of nodes, the self-healing performance is controlled
 entirely by H, such that a higher value of H reduces the number of cycles needed to repair the network. This is valid for both the case of a catastrophic failure and high churn (also because catastrophic failure is a subset of the high churn problem)
 
 \item Q3. %What policies do you suggest for (i) peer selection, (ii) view propagation and (iii) view selection, if: 
 \textbf{(a) the load balancing is the main issue.}
-\newline \emph{peer selection} -- tail, which selects the node with the highest age
-\newline \emph{view propagation} -- pushpull
-\newline \emph{view selection} -- swapper, which results in a variance of indegree lower than in the uniform random graph
+\newline \emph{peer selection} -- tail, which selects the node with the highest age;
+\newline \emph{view propagation} -- pushpull;
+\newline \emph{view selection} -- swapper, which results in a variance of indegree lower than in the uniform random graph;
  \newline \textbf{(b) the fault tolerance is the main issue.}
-\newline \emph{peer selection} -- tail
-\newline \emph{view propagation} -- pushpull
-\newline \emph{view selection} -- healer, since removal of dead links is important in this case and for that to occur H should be >=1 (or preferably as high as possible), while for blind and swapper policies H=0
+\newline \emph{peer selection} -- tail;
+\emph{view propagation} -- pushpull; \emph{view selection} -- healer, since removal of dead links is important in this case and for that to occur H should be$\geq$1 (or preferably as high as possible), while for blind and swapper policies H=0
 
 
 \end{itemize}
