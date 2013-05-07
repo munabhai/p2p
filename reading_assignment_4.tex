@@ -1,0 +1,67 @@
+\documentclass[10pt]{proc}
+
+\begin{document}
+\large{\textbf{Reading Assignment 4}}\\
+\large{\textbf{Authors: Gerard Marin Nogueras \newline Nicolae Paladi}}\\
+\section{Motivation}
+Realizing the advantages of p2p protocols in streaming services is difficult, since the service needs to guarantee high availability and stable and timely throughput of the messages despite
+presence of unfriendly or misconfigured peers. Furthermore, streaming using p2p protocols must be robust against selfish nodes (free-riders).
+To solve this, the paper introduces  BAR Gossip, which is designed to disseminate live streams ensuring timely delivery of data.
+%, so it attempts to maintain stable throughput rather than optimize average download bandwidth.  
+\section{Contributions}
+\begin{itemize}
+\item Description of the first p2p streaming application in BAR model.
+\item Description of the first gossip protocol in the BAR model, which the p2p streaming application relies on.
+\item Test and simulation of the presented system, providing stable throughput, tendency to follow the described protocol and robustness against up to certain amount of Byzantine or colluding nodes.
+\end{itemize}
+
+
+\section{Solution}
+The BAR model assumes 3 types of nodes: \emph{altruistic} (follow the specified protocol), \emph{rational} (tend to maximize own individual utility) and \emph{Byzantine} (act to increase cost and decrease  benefit for all rational nodes). Even though non-altruistic nodes are thought to deteriorate the obtained performance, nodes following the introduced protocol tend to the Nash Equilibria, i.e. they cannot benefit from protocol deviation. The protocol is based on BAR gossip and supports two exchange mechanisms: Balanced Exchange Protocol and Optimistic Push Protocol. 
+BAR gossip is a round-based gossip protocol, each round consists of 4 phases: \emph{partner selection} (select a partner to gossip with using an unpredictable, deterministic, verifiable value from a PRNG seeded by a non-deterministic seed); \emph{history exchange} (sequence of three messages encrypted and signed, about the updates each node has and wills); \emph {update exchange} (exchange of symmetrically encrypted briefcase messages containing the updates); \emph{key exchange} (exchange the key to decrypt the updates). 
+
+\section{Strong Points}
+\begin{enumerate}
+\item Protocol tends to Nash Equilibria. Rational nodes tend to follow the protocol.
+\item Better results in presence of colluding nodes and up to 20\% Byzantine nodes.
+\item The protocol does not depend on the reputation of peers.
+\item The protocol prevents unilateral deviation by rational nodes.
+\end{enumerate}
+
+\section{Weak Points}
+\begin{enumerate}
+\item Assumes a static membership system and pre-shared key model where the broadcaster ($\mathcal{B}$) assigns keys to all nodes beforehand, limiting protocol scalability.
+\item Requires signatures to be unique, property not provided all standard signature algorithms.
+%\item The protocol states that \emph{public and private keys} must be distributed, while it is enough to distribute private keys and the nodes can generate the public key themselves, if e.g. RSA is used.
+\item Receiver will forward the briefcase to $\mathcal{B}$ for decryption \emph{both} when no key is provided or when the briefcase contains invalid data. However, the former case does \emph{not} result in an eviction note for the sender (making briefcase forwarding and decrypting pointless).
+\end{enumerate}
+
+
+\section{Questions}
+The threat model in a gossip-based P2P system includes several known attacks, such as
+message replay, discarding specific node descriptors, corruption of nodes through descriptor modification, forging bogus node descriptors to pollute the network, biased node selection and flooding attacks, among others. Such attacks lead to attack models such as \emph{denial-of-service} attacks, where groups of malicious nodes disrupt the operation of the network or \emph{eclipse} attacks, where sets of malicious colluding nodes "poison" a correct node to only
+peer with members of the collusion. 
+\emph{Node collusion} is a threat in itself, as it often
+a set of malicious colluding nodes can subvert the normal operation of gossip-based p2p system
+In a broader scope, such attacks would either aim to maximize utility for a specific node (or a group of nodes the node colludes with), or disrupt the normal operation of the network through a DoS attack. 
+This yields three types of nodes: altruistic, rational and Byzantine.
+
+\emph{Altruistic} nodes are benign and simply follow the prescribed protocol with no deviations.
+
+\emph{Rational} nodes follow a strategy to maximize own utility, i.e. decrease costs and increase benefits. 
+For example, in \cite{li2006bar} the node's benefit is the ability to play the live stream, while the cost is the communication overhead induced by sending and receiving packets. 
+
+\emph{Byzantine} nodes are assumed to have arbitrary unknown utility functions (due to either malfunction or maliciousness) which can affect rational behaviour. By definition, Byzantine nodes are assumed to not be able to benefit from their deviations. Instead, for example in [1] they seek to increase cost and decrease benefit for rational and altruistic nodes.
+
+
+
+
+
+%Following this example, rational nodes follow the protocol if their own end-to-end benefit in doing so exceeds the costs, i.e. the communication overhead. In \cite{li2006bar}, it is assumed by definition that rational nodes only communicate with nodes prescribed by the partner selection algorithm (Lemma 1), do not over-report their history in neither balanced nor optimistic strateges (Lemma 2), do not under-report their history in balanced exchanges (Lemma 3), never place fake or garbage data in briefcase messages (Lemma 4), report malformed briefcases (L5emma ), do not send invalid key response messages (Lemma 6) and eventually respond with a valid key to key request messages (Lemma 7).
+
+
+
+\bibliographystyle{plain}
+\bibliography{reading_assignments_bibliography}
+
+\end{document}
