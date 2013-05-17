@@ -1,0 +1,71 @@
+\documentclass[10pt]{proc}
+
+\begin{document}
+\large{\textbf{Reading Assignment 5}}\\
+\large{\textbf{Authors: Gerard Marin Nogueras \newline Nicolae Paladi}}\\
+\section{Motivation}
+%Reliability and massive scalability are among the most important requirements for large distributed systems, %and distributed data storage in particular,  
+%with e-commerce being an important application domain. 
+Large distributed systems comprise thousands of components, all of which can fail at any moment, creating the need for platforms that emphasize reliability and tight control over the trade offs between availability, consistency, cost-effectiveness and performance. 
+
+%These issues are addressed by Dynamo, a key-value storage system designed with the goal of “always-on”, i.e. sacrificing consistency under certain scenarios to guarantee a maximum level of availability. 
+
+\section{Contributions}
+\begin{itemize}
+%\item Presentation of requirements for the store system in the context of an e-commerce platform like Amazon.com.
+%\item Description of Dynamo, data storage system with high availability used by Amazon.
+\item Evaluation of approaches for building a single highly-available system. 
+\item Demonstration of the applicability of eventually-consistent storage systems for environments with strict performance requirements. 
+%\item Description of different features and problems of Dynamo, including the protocol and system architecture used. 
+\item Description of implementation and obtained results in real world applications that use Dynamo. 
+\end{itemize}
+
+
+\section{Solution}
+%The solution assumes a query model with simple read and write operations on data items uniquely identified by a key, assumes a deviation from the ACID model towards weaker consistency, a scalability across hundreds of nodes and commodity underlying hardware. 
+The application focuses on partitioning, replication, versioning, membership, failure handling and scaling. Partitioning is achieved by applying a variant of consistent hashing with the use of virtual nodes.
+%where upon joining the ring, each node is assigned multiple positions (virtual nodes). 
+Data items are replicated across N multiple nodes, such that each virtual node is responsible for keys in the region between itself and its Nth predecessor;a list of nodes responsible for a key is called \emph{preference list}. 
+To avoid losing information due to conflicts while supporting high availability, each data modification results in a new immutable version based on vector clocks. 
+The system can sometimes itself determine the authoritative version through syntactic reconciliation; in other cases conflict resolution is propagated upstream to the application layer. 
+Read and write operations are performed using the first N healthy nodes in the preference list using a quorum-like consistency protocol. 
+Dynamo uses a mechanism ("hinted handoff") to ensure replicas eventually reach even nodes which are temporarily down, once they recover. 
+Merkle trees are used to efficiently check whether nodes require synchronization. 
+Dynamo also covers mechanisms for membership and failure detection and adding/removing storage nodes.
+
+\section{Strong Points}
+\begin{enumerate}
+\item Dynamo (D) provide very high levels of availability and performance.
+\item D handles successfully server and data center failures and network partitions. 
+\item D is incrementally scalable, can scale up and down depending on the request load.
+\item Dynamo supports read and write operations even during network partitions and resolves update conflicts.
+%\item Dynamo offers a customizable storage system where some parameters can be tuned to achieve desired performance, durability or consistency levels.
+\end{enumerate}
+
+\section{Weak Points}
+\begin{enumerate}
+\item D is only applicable in trusted environments and does not handle data integrity or security issues. 
+\item D does not support either hierarchical namespaces or complex relational schemas.
+\item D uses a truncation scheme in the vector clocks used for data versioning that can lead to inefficiencies in reconciliation.
+\item For synchronization of replicas in the data storage, D uses Merkle trees where leaves are hashes of the values of individual keys. When nodes join or leave the system, the trees need to be recalculated. 
+\end{enumerate}
+
+
+\section{Questions}
+\emph{Q1: Explain three reasons how consistent hashing can lead to load-imbalance.}
+Load imbalance, which is the load deviation on one node from the average load value above a certain threshold can occur in the following cases:
+\textbf{Node identifiers may not be balanced} -- some of the nodes might be responsible a larger range of the key space than others and would thus have to respond to more requests.
+\textbf{Data identifiers may not be balanced} -- the distribution of hashes of the data identifiers might be skewed such that they are not uniformly distributed across all nodes. 
+\textbf{Hot stops} -- some data items may get very popular. It will lead in a high request rate to the node storing these popular items, while other nodes keep a very low request rate. 
+
+
+\emph{Q2: When does conflict resolution happen in Dynamo (during read or write)? Who does the conflict resolution (client or data store)?}
+Conflict resolution happens during reads. The reason is that Dynamo needs to offer a high availability. In the Amazon context where Dynamo is used, this availability means basically to offer an “always writable” data store, so no updates from clients are rejected. These updates are write operations, so it forces to resolve conflicts during reads, avoiding writes to fail. 
+Conflict resolution is performed by either the application (the client) or data store depending on the service. The difference between the two options is the limitation among the choices that can be done for the resolution. If resolution is performed by the data store only simple policies such as “last write wins” can be used. This policy is used when Dynamo uses the timestamp based reconciliation pattern. On the other hand, since the application is aware of data schema and state, it can take a better suited decision for the client. This policy is used when Dynamo uses business logic specific reconciliation, such as shopping cart for e-commerce in Amazon.com. 
+ 
+
+
+\bibliographystyle{plain}
+\bibliography{reading_assignments_bibliography}
+
+\end{document}
